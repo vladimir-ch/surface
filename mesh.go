@@ -5,8 +5,8 @@ import "github.com/vladimir-ch/dcel"
 // Point is a point in 3D Euclidean space.
 type Point [3]float64
 
-// Vertex is a DCEL node with a position in 3D space.
-type Vertex struct {
+// Node is a DCEL node with a position in 3D space.
+type Node struct {
 	dcel.BaseNode
 	Point Point
 }
@@ -23,26 +23,26 @@ func NewMesh() *Mesh {
 	}
 }
 
-// AddVertex adds a new vertex located at p to the mesh.
-func (m *Mesh) AddVertex(p Point) *Vertex {
-	u := m.AddNode(m.NewNodeID()).(*Vertex)
+// AddNode adds a new vertex located at p to the mesh.
+func (m *Mesh) AddNode(p Point) *Node {
+	u := m.Graph.AddNode(m.NewNodeID()).(*Node)
 	u.Point = p
 	return u
 }
 
-// Vertex returns a vertex with the given id or nil if such vertex does not
+// Node returns a vertex with the given id or nil if such vertex does not
 // exist in the mesh.
-func (m *Mesh) Vertex(id int) *Vertex {
-	u := m.Node(id)
+func (m *Mesh) Node(id int) *Node {
+	u := m.Graph.Node(id)
 	if u == nil {
 		return nil
 	}
-	return u.(*Vertex)
+	return u.(*Node)
 }
 
 // AddFace adds a new triangle face with the given vertices to the mesh.
 // If such face cannot be added, it returns a non-nil error.
-func (m *Mesh) AddFace(n1, n2, n3 *Vertex) error {
+func (m *Mesh) AddFace(n1, n2, n3 *Node) error {
 	return m.Graph.AddFace(m.NewFaceID(), n1, n2, n3)
 }
 
@@ -51,7 +51,7 @@ type items struct {
 }
 
 func (items) NewNode(id int) dcel.Node {
-	return &Vertex{
+	return &Node{
 		BaseNode: *dcel.NewBaseNode(id),
 	}
 }
