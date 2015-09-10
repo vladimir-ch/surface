@@ -1,10 +1,6 @@
 package surface
 
-import (
-	"fmt"
-
-	"github.com/vladimir-ch/dcel"
-)
+import "github.com/vladimir-ch/dcel"
 
 // Point is a point in 3D Euclidean space.
 type Point [3]float64
@@ -27,10 +23,11 @@ func NewMesh() *Mesh {
 	}
 }
 
-// AddVertex adds a new vertex with the given id located at p to the mesh.
-func (m *Mesh) AddVertex(id int, p Point) {
-	u := m.AddNode(id).(*Vertex)
+// AddVertex adds a new vertex located at p to the mesh.
+func (m *Mesh) AddVertex(p Point) *Vertex {
+	u := m.AddNode(m.NewNodeID()).(*Vertex)
 	u.Point = p
+	return u
 }
 
 // Vertex returns a vertex with the given id or nil if such vertex does not
@@ -43,14 +40,10 @@ func (m *Mesh) Vertex(id int) *Vertex {
 	return u.(*Vertex)
 }
 
-// AddFace adds a new triangle face with the given id and vertices to the mesh.
+// AddFace adds a new triangle face with the given vertices to the mesh.
 // If such face cannot be added, it returns a non-nil error.
-// It panics if a face with the same id already exists in the mesh.
-func (m *Mesh) AddFace(id int, n1, n2, n3 *Vertex) error {
-	if m.Graph.HasFace(id) {
-		panic(fmt.Sprintf("surface: face ID collision: %d", id))
-	}
-	return m.Graph.AddFace(id, n1, n2, n3)
+func (m *Mesh) AddFace(n1, n2, n3 *Vertex) error {
+	return m.Graph.AddFace(m.NewFaceID(), n1, n2, n3)
 }
 
 type items struct {
